@@ -1,0 +1,52 @@
+@page "/CallWebAPI"
+@inject HttpClient Http
+
+
+<h1>Call a Web API from Blazor</h1>
+<h3>Todo Items</h3>
+
+@if (todoItems == null)
+{
+    <p>No Todo Items found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="text-center">Complete</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in todoItems)
+            {
+                <tr>
+                    <td class="text-center">
+                        @if (item.Done)
+                        {
+                            <span>&#10004;</span>
+                        }
+                    </td>
+                    <td>@item.Item</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private const string ServiceEndpoint = "https://localhost:10000/api/TodoItems";
+    private TodoItem[] todoItems;
+
+    protected override async Task OnInitializedAsync() => await GetTodoItems();
+
+    private async Task GetTodoItems() => todoItems = await Http.GetFromJsonAsync<TodoItem[]>(ServiceEndpoint);
+
+    private class TodoItem
+    {
+        public long Id { get; set; }
+        public string Item { get; set; }
+        public bool Done { get; set; }
+    }
+}
